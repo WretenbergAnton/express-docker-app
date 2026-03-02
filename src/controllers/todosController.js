@@ -1,29 +1,15 @@
 import Todo from "../model/Todo.js";
 
-export const getTodos = async (req, res) => {
+export const getTodos = async (req, res, next) => {
   try {
     const todos = await Todo.find()
     res.json(todos)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    next(error)
   }
 }
 
-export const createTodo = async (req, res) => {
-  try {
-    const todo = await Todo.create({
-      title: req.body.title
-    })
-    res.status(201).json(todo)
-  } catch (error) {
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ message: error.message })
-    }
-    res.status(500).json({ message: error.message })
-  }
-}
-
-export const getTodo = async (req, res) => {
+export const getTodo = async (req, res, next) => {
   try {
     const todo = await Todo.findById(req.params.id)
 
@@ -33,14 +19,20 @@ export const getTodo = async (req, res) => {
 
     res.json(todo)
   } catch (error) {
-    if (error.name === 'CastError') {
-      return res.status(400).json({ message: 'Invalid todo id' })
-    }
-    res.status(500).json({ message: error.message })
+    next(error)
   }
 }
 
-export const updateTodo = async (req, res) => {
+export const createTodo = async (req, res, next) => {
+  try {
+    const todo = await Todo.create({ title: req.body.title })
+    res.status(201).json(todo)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const updateTodo = async (req, res, next) => {
   try {
     const todo = await Todo.findByIdAndUpdate(req.params.id, req.body, { new: true })
 
@@ -50,14 +42,11 @@ export const updateTodo = async (req, res) => {
 
     res.json(todo)
   } catch (error) {
-    if (error.name === 'CastError') {
-      return res.status(400).json({ message: 'Invalid todo id' })
-    }
-    res.status(500).json({ message: error.message })
+    next(error)
   }
 }
 
-export const deleteTodo = async (req, res) => {
+export const deleteTodo = async (req, res, next) => {
   try {
     const todo = await Todo.findByIdAndDelete(req.params.id)
 
@@ -67,9 +56,6 @@ export const deleteTodo = async (req, res) => {
 
     res.json({ message: 'Todo deleted successfully' })
   } catch (error) {
-    if (error.name === 'CastError') {
-      return res.status(400).json({ message: 'Invalid todo id' })
-    }
-    res.status(500).json({ message: error.message })
+    next(error)
   }
 }

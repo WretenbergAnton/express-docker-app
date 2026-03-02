@@ -3,6 +3,7 @@ import express from 'express'
 
 import connectDB from './src/config/db.js'
 import todoRouter from './src/routes/todoRoutes.js'
+import errorHandler from './src/middleware/errorHandler.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -15,6 +16,8 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/todos', todoRouter)
+
+app.use(errorHandler)
 
 connectDB().then(() => {
   app.listen(PORT, () => {
