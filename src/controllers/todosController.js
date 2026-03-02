@@ -34,7 +34,11 @@ export const createTodo = async (req, res, next) => {
 
 export const updateTodo = async (req, res, next) => {
   try {
-    const todo = await Todo.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    const todo = await Todo.findByIdAndUpdate(
+      req.params.id, 
+      req.body, 
+      { returnDocument: 'after' }
+    )
 
     if (!todo) {
       return res.status(404).json({ message: 'Todo not found' })
